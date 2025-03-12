@@ -62,7 +62,7 @@ export default function ConsultPage() {
       
       // 암호화하여 저장
       const encryptedData = encryptData(analysisData);
-      const encryptedIssue = encryptData(legalIssue);
+      const encryptedIssue = encryptData({ text: legalIssue });
       
       // 두 가지 방식으로 저장 (하위 호환성 유지)
       sessionStorage.setItem("legalIssue", encryptedIssue);

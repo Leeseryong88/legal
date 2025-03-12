@@ -109,6 +109,11 @@ export default function AnalyzePage() {
           if (isEncrypted) {
             // 암호화된 데이터 복호화
             parsedIssue = decryptData(storedLegalIssue);
+            
+            // 새로운 형식 확인 (객체 내의 text 필드)
+            if (parsedIssue && typeof parsedIssue === 'object' && 'text' in parsedIssue) {
+              parsedIssue = parsedIssue.text;
+            }
           } else {
             // 이전 방식으로 저장된 데이터 처리
             parsedIssue = JSON.parse(storedLegalIssue);
