@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, FormEvent } from "react";
+import { useState, useEffect, FormEvent, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -24,8 +24,8 @@ export default function AnalyzePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // 질문 목록 정의
-  const questions: Question[] = [
+  // 질문 목록 정의 - useMemo로 감싸서 렌더링마다 재생성되지 않도록 함
+  const questions = useMemo<Question[]>(() => [
     {
       id: "incidentDate",
       text: "사건이 발생한 날짜는 언제인가요?",
@@ -56,7 +56,7 @@ export default function AnalyzePage() {
       required: false,
       type: "textarea"
     }
-  ];
+  ], []);
 
   useEffect(() => {
     // 세션 스토리지에서 법률 문제 데이터 불러오기

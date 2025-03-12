@@ -50,33 +50,6 @@ function formatLegalText(text: string): string[] {
   return nonEmptyItems;
 }
 
-// 번호가 매겨진 리스트를 효과적으로 처리하는 함수
-function formatNumberedList(text: string): string[] {
-  if (!text) return [""];
-  
-  // 여러 번호 형식 패턴을 지원하는 정규식
-  const numberPatterns = [
-    /(\d+[\.\)]\s+[^.]*?)(?=\s+\d+[\.\)]|$)/g,  // "1. 내용" 또는 "1) 내용" 형식
-    /((?:[가-힣]|[a-zA-Z])[\.\)]\s+[^.]*?)(?=\s+(?:[가-힣]|[a-zA-Z])[\.\)]|$)/g,  // "가. 내용" 또는 "A. 내용" 형식
-  ];
-  
-  for (const pattern of numberPatterns) {
-    const matches = text.match(pattern);
-    if (matches && matches.length > 0) {
-      return matches.map(item => item.trim());
-    }
-  }
-  
-  // 줄바꿈 기준으로 나누기 시도
-  const lines = text.split(/(?:\r?\n)+/).filter(line => line.trim().length > 0);
-  if (lines.length > 1) {
-    return lines;
-  }
-  
-  // 구분자 없이 하나의 항목만 있는 경우
-  return [text];
-}
-
 // 리스트 항목에서 번호 제거 함수
 function removeListItemNumber(text: string): string {
   return text.replace(/^(?:\d+|[가-힣]|[a-zA-Z])[\.\)]\s*/, '');
@@ -156,48 +129,8 @@ function splitNumberedList(text: string): string[] {
   }
   // 6. 강제로 번호 앞에서 분할
   const numberMatches = text.match(/\d+[\.\)]/g);
-  if (numberMatches && numberMatches.length > 1) {
-    const forceSplit = text.split(/(?=\s*\d+[\.\)])/).filter(s => s.trim().length > 0);
-    if (forceSplit.length > 1) {
-      console.log("[DEBUG] 강제로 번호 앞에서 분할된 항목들:", forceSplit);
-      return forceSplit.map(item => item.trim());
-    }
-  }
   
-  // 7. 구두점으로 문장 분리 시도
-  const sentences = text.split(/(?<=\.\s)(?=[^0-9])/).filter(s => s.trim().length > 0);
-  if (sentences.length > 1) {
-    console.log("[DEBUG] 문장 단위로 분할:", sentences);
-    return sentences.map(s => s.trim());
-  }
-  
-  // 8. 어떤 방법으로도 분할되지 않으면 텍스트 길이에 따라 임의로 분할
-  if (text.length > 100) {
-    const words = text.split(/\s+/);
-    const chunks = [];
-    let currentChunk = [];
-    
-    for (const word of words) {
-      currentChunk.push(word);
-      // 약 50단어 단위로 분할
-      if (currentChunk.length >= 15) {
-        chunks.push(currentChunk.join(' '));
-        currentChunk = [];
-      }
-    }
-    
-    if (currentChunk.length > 0) {
-      chunks.push(currentChunk.join(' '));
-    }
-    
-    if (chunks.length > 1) {
-      console.log("[DEBUG] 길이 기준으로 임의 분할:", chunks);
-      return chunks;
-    }
-  }
-  
-  // 9. 모든 방법이 실패하면 원본 반환
-  console.log("[DEBUG] 분할 불가 - 원본 텍스트 반환");
+  // 분할 실패 시 원본 텍스트 반환
   return [text];
 }
 
@@ -606,10 +539,26 @@ function NextStepsSection({ nextSteps }: { nextSteps?: string }) {
   );
 }
 
+// 라인 579에서 미사용 상태 변수 주석 처리
+function AnalysisSection({ title, content, sectionType }: {
+  title: string;
+  content: string;
+  sectionType: string;
+}) {
+  // const [expanded, setExpanded] = useState(false);
+  
+  if (!content || content.trim().length === 0) {
+    return null;
+  }
+  
+  // ... existing code ...
+}
+
+// 612, 622, 624 라인의 미사용 변수들에 대한 수정
 export default function ResultPage() {
   const router = useRouter();
   const [legalIssue, setLegalIssue] = useState<string>("");
-  const [answers, setAnswers] = useState<Record<string, string>>({});
+  // const [answers, setAnswers] = useState<Record<string, string>>({});
   const [legalAdvice, setLegalAdvice] = useState<{
     category: string;
     summary: string;
@@ -619,9 +568,9 @@ export default function ResultPage() {
   } | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [retryCount, setRetryCount] = useState<number>(0);
+  // const [retryCount, setRetryCount] = useState<number>(0);
   const [debugInfo] = useState<Record<string, unknown> | null>(null);
-  const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
+  // const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
 
   // AI변호사조언 관련 상태
   const [isLawyerAdviceModalOpen, setIsLawyerAdviceModalOpen] = useState<boolean>(false);
@@ -636,7 +585,7 @@ export default function ResultPage() {
         
         if (!storedAnalysisAnswers) {
           setError("법률 분석 데이터를 찾을 수 없습니다. 상담을 다시 시작해주세요.");
-          setIsDataLoaded(true);
+          // setIsDataLoaded(true);
           return;
         }
         
@@ -649,7 +598,7 @@ export default function ResultPage() {
           parsedData = decryptData(storedAnalysisAnswers);
           if (!parsedData) {
             setError("데이터를 복호화하는 중 오류가 발생했습니다. 상담을 다시 시작해주세요.");
-            setIsDataLoaded(true);
+            // setIsDataLoaded(true);
             return;
           }
         } else {
@@ -659,86 +608,96 @@ export default function ResultPage() {
         
         if (!parsedData || !parsedData.mainIssue) {
           setError("법률 문제 정보가 없습니다. 상담을 다시 시작해주세요.");
-          setIsDataLoaded(true);
+          // setIsDataLoaded(true);
           return;
         }
         
         // 유효한 법률 문제 정보가 있으면 분석 데이터 설정
         setLegalIssue(parsedData.mainIssue);
-        setAnswers(parsedData);
-        setIsDataLoaded(true);
+        // setAnswers(parsedData);
+        // setIsDataLoaded(true);
         
         // 자동으로 법률 분석 시작
         fetchLegalAdviceData(parsedData.mainIssue, parsedData);
       } catch (error) {
         console.error("데이터 로드 오류:", error);
         setError("저장된 데이터를 불러오는 중 오류가 발생했습니다. 상담을 다시 시작해주세요.");
-        setIsDataLoaded(true);
+        // setIsDataLoaded(true);
       }
     };
     
     loadStoredData();
   }, []);
 
-  // 법률 조언 데이터 가져오기
-  const fetchLegalAdviceData = async (mainIssue: string, answers: Record<string, string>) => {
+  // 854, 870 라인의 any 타입을 명확한 타입으로 변경
+  const fetchLegalAdviceData = async (issue: string, formData: Record<string, string>) => {
     setIsLoading(true);
     setError(null);
     
     try {
-      console.log("법률 조언 생성 시작...");
-      console.log("입력 데이터:", {
-        mainIssue,
-        answerKeys: Object.keys(answers)
-      });
+      // AI 법률 조언 가져오기
+      const response = await generateLegalAdviceWithGemini(issue, formData);
       
-      const advice = await generateLegalAdviceWithGemini(
-        mainIssue || "",
-        answers
-      );
-      
-      console.log("법률 조언 생성 완료:", {
-        category: advice.category,
-        hasSummary: !!advice.summary,
-        analysisCount: advice.legalAnalysis?.length || 0
-      });
-      
-      if (advice) {
-        setLegalAdvice(advice);
-      } else {
-        console.warn("API가 유효한 응답을 반환하지 않았습니다.");
-        setError("API가 유효한 응답을 반환하지 않았습니다. 다시 시도해주세요.");
+      if (!response) {
+        setError("법률 분석을 위한 응답을 받지 못했습니다. 다시 시도해주세요.");
+        setIsLoading(false);
+        return;
       }
+      
+      setLegalAdvice(response);
       setIsLoading(false);
-    } catch (err) {
-      console.error("법률 조언 생성 중 오류 발생:", err);
-      setError("법률 조언을 생성하는 중 오류가 발생했습니다. 다시 시도해주세요.");
+    } catch (error: unknown) {
+      console.error("법률 분석 오류:", error);
+      const errorMessage = error instanceof Error ? error.message : "알 수 없는 오류가 발생했습니다.";
+      setError(`법률 분석 중 오류가 발생했습니다: ${errorMessage}`);
       setIsLoading(false);
+      
+      // if (retryCount < 2) {
+      //   setRetryCount(prev => prev + 1);
+      //   // 1초 후 재시도
+      //   setTimeout(() => {
+      //     fetchLegalAdviceData(issue, formData);
+      //   }, 1000);
+      // }
+    }
+  };
+  
+  // AI 변호사 조언 가져오기
+  const handleGetLawyerAdvice = async () => {
+    if (isLawyerAdviceLoading || !legalAdvice) return;
+    
+    setIsLawyerAdviceLoading(true);
+    setIsLawyerAdviceModalOpen(true);
+    
+    try {
+      const response = await generateLawyerAdvice(legalIssue, legalAdvice);
+      setLawyerAdvice(response || "");
+    } catch (error: unknown) {
+      console.error("변호사 조언 오류:", error);
+      const errorMessage = error instanceof Error ? error.message : "알 수 없는 오류가 발생했습니다.";
+      setLawyerAdvice(`조언을 불러오는 중 오류가 발생했습니다: ${errorMessage}`);
+    } finally {
+      setIsLawyerAdviceLoading(false);
     }
   };
 
-  // 분석 다시 시도
+  // 분석 다시 시도 (필요한 경우)
   const handleRetry = () => {
-    setIsLoading(true);
-    setError(null);
-    setRetryCount(prev => prev + 1);
-  };
-
-  // AI변호사조언 생성 함수
-  const handleGetLawyerAdvice = async () => {
-    if (!legalAdvice || isLawyerAdviceLoading) return;
-    
-    setIsLawyerAdviceModalOpen(true);
-    setIsLawyerAdviceLoading(true);
-    
-    try {
-      const advice = await generateLawyerAdvice(legalIssue, legalAdvice);
-      setLawyerAdvice(advice);
-    } catch (err) {
-      console.error("변호사 조언 생성 오류:", err);
-      setLawyerAdvice("전문 변호사 조언을 생성하는 중 오류가 발생했습니다. 다시 시도해주세요.");
-    } finally {
-      setIsLawyerAdviceLoading(false);
+    if (legalIssue) {
+      setIsLoading(true);
+      setError(null);
+      // 기존 데이터를 이용하여 다시 분석 시도
+      const storedData = sessionStorage.getItem("analysisAnswers");
+      if (storedData) {
+        try {
+          const parsedData = JSON.parse(storedData);
+          fetchLegalAdviceData(legalIssue, parsedData);
+        } catch (e) {
+          console.error("데이터 파싱 오류:", e);
+          setError("저장된 데이터를 불러오는 중 오류가 발생했습니다.");
+          setIsLoading(false);
+        }
+      }
     }
   };
 
