@@ -128,7 +128,7 @@ function splitNumberedList(text: string): string[] {
     return alphaMatches.map(item => item.trim());
   }
   // 6. 강제로 번호 앞에서 분할
-  const numberMatches = text.match(/\d+[\.\)]/g);
+  // const numberMatches = text.match(/\d+[\.\)]/g);
   
   // 분할 실패 시 원본 텍스트 반환
   return [text];
@@ -539,22 +539,6 @@ function NextStepsSection({ nextSteps }: { nextSteps?: string }) {
   );
 }
 
-// 라인 579에서 미사용 상태 변수 주석 처리
-function AnalysisSection({ title, content, sectionType }: {
-  title: string;
-  content: string;
-  sectionType: string;
-}) {
-  // const [expanded, setExpanded] = useState(false);
-  
-  if (!content || content.trim().length === 0) {
-    return null;
-  }
-  
-  // ... existing code ...
-}
-
-// 612, 622, 624 라인의 미사용 변수들에 대한 수정
 export default function ResultPage() {
   const router = useRouter();
   const [legalIssue, setLegalIssue] = useState<string>("");
@@ -810,7 +794,7 @@ export default function ResultPage() {
                 법률 분석
               </h3>
               <div className="space-y-5">
-                {legalAdvice?.legalAnalysis.map((item: any, index: number) => (
+                {legalAdvice?.legalAnalysis.map((item: LegalAnalysisItem, index: number) => (
                   <LegalAnalysisSection key={index} item={item} />
                 ))}
               </div>
@@ -826,7 +810,7 @@ export default function ResultPage() {
                 대응 방안
               </h3>
               <div className="space-y-5">
-                {legalAdvice?.recommendations.map((item: any, index: number) => (
+                {legalAdvice?.recommendations.map((item: LegalAnalysisItem, index: number) => (
                   <RecommendationSection key={index} item={item} />
                 ))}
               </div>
