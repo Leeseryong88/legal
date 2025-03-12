@@ -509,7 +509,6 @@ function LawyerAdviceModal({ isOpen, onClose, advice, isLoading }: LawyerAdviceM
 
 // NextStepsSection 컴포넌트 수정
 function NextStepsSection({ nextSteps }: { nextSteps?: string }) {
-  const [expanded, setExpanded] = useState(false);
   // 매개변수가 undefined일 수 있으므로 기본값 처리
   const stepsItems = splitNumberedList(nextSteps || "");
   
