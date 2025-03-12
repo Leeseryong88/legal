@@ -147,7 +147,7 @@ export default function AnalyzePage() {
     };
     
     loadStoredData();
-  }, [router]);
+  }, [router, questions]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();

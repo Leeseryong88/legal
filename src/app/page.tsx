@@ -1,9 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChevronRight, FileClock, FileSearch, FileText, Shield, Scale, Search, FileCheck, Check } from "lucide-react";
+import { FileText, Search, FileCheck, Check } from "lucide-react";
 
 export default function Home() {
   return (

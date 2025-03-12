@@ -31,7 +31,7 @@ export function generateId(): string {
  * 참고: 이는 완전한 암호화가 아니며, 전문적인 보안이 필요한 경우 더 강력한 암호화 라이브러리 사용 권장
  * 유니코드 문자(한글 등)도 처리할 수 있도록 encodeURIComponent 사용
  */
-export function encryptData(data: any): string {
+export function encryptData(data: Record<string, unknown>): string {
   try {
     // 데이터를 JSON 문자열로 변환
     const jsonString = JSON.stringify(data);
@@ -52,7 +52,7 @@ export function encryptData(data: any): string {
  * 암호화된 데이터 복호화
  * 유니코드 문자(한글 등)도 처리할 수 있도록 decodeURIComponent 사용
  */
-export function decryptData(encryptedData: string): any {
+export function decryptData(encryptedData: string): Record<string, unknown> | null {
   try {
     // Base64 디코딩
     const decodedString = atob(encryptedData);

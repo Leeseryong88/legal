@@ -82,25 +82,6 @@ function removeListItemNumber(text: string): string {
   return text.replace(/^(?:\d+|[가-힣]|[a-zA-Z])[\.\)]\s*/, '');
 }
 
-// 권장 단계를 리스트로 분할하는 함수
-function formatSteps(text: string): string[] {
-  if (!text) return [""];
-  
-  // 여러 형식의 리스트 분할 시도
-  const numberFormats = formatNumberedList(text);
-  if (numberFormats.length > 1) {
-    return numberFormats;
-  }
-  
-  // 문장 단위로 분할
-  const sentences = text.split(/(?<=\.\s)(?=[가-힣A-Za-z0-9])/);
-  if (sentences.length > 1) {
-    return sentences.filter(s => s.trim().length > 0);
-  }
-  
-  return [text];
-}
-
 // 텍스트 분할 디버깅 함수 추가 (콘솔에 로깅)
 function debugTextSplitting(text: string, title: string) {
   console.log(`[DEBUG] ${title} 텍스트:`, text);
@@ -129,9 +110,6 @@ function splitNumberedList(text: string): string[] {
   
   // 3. 번호+공백 패턴으로 분할 시도 (한 줄에 여러 번호 항목이 있는 경우)
   // "1. 내용 2. 내용" 같은 패턴 처리
-  const numberPattern = /\s*(?:\d+[\.\)]|[가-힣][\.\)]|[a-zA-Z][\.\)])\s+/g;
-  
-  // 첫 번째 패턴을 찾아 시작 위치 확인
   const firstNumberMatch = text.match(/^\s*(?:\d+[\.\)]|[가-힣][\.\)]|[a-zA-Z][\.\)])\s+/);
   if (firstNumberMatch) {
     // 첫 번째 패턴을 제외한 텍스트
@@ -142,7 +120,6 @@ function splitNumberedList(text: string): string[] {
     
     if (matches.length > 0) {
       const items = [];
-      let lastIndex = 0;
       
       // 첫 번째 항목 추가
       items.push(firstNumberMatch[0] + remainingText.substring(0, matches[0].index));
@@ -153,7 +130,6 @@ function splitNumberedList(text: string): string[] {
         const nextIndex = i < matches.length - 1 ? matches[i+1].index : remainingText.length;
         const item = remainingText.substring(match.index, nextIndex);
         items.push(item);
-        lastIndex = nextIndex;
       }
       
       console.log("[DEBUG] 번호 패턴으로 분할된 항목들:", items);
@@ -644,7 +620,7 @@ export default function ResultPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState<number>(0);
-  const [debugInfo, setDebugInfo] = useState<any>(null);
+  const [debugInfo] = useState<Record<string, unknown> | null>(null);
   const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
 
   // AI변호사조언 관련 상태
